@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>二维码管理 — 扫码拨打电话</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+    * { font-family: 'Noto Sans SC', system-ui, sans-serif; }
+
+    body { background: #f1f5f9; }
+
+    .card {
+      background: white;
+      border-radius: 1.25rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+    }
+
+    input:focus { outline: none; box-shadow: 0 0 0 3px rgba(59,130,246,.25); }
+
+    #qrCanvas { image-rendering: pixelated; }
+
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white; }
+      .print-area { box-shadow: none; border: none; }
+    }
+  </style>
+</head>
+<body class="min-h-screen p-6">
+
+  <div class="max-w-2xl mx-auto">
+
+    <!-- Header -->
+    <div class="mb-8 text-center">
+      <h1 class="text-2xl font-bold text-slate-800">二维码管理后台</h1>
+      <p class="text-slate-500 text-sm mt-1">配置手机号，生成可打印的二维码</p>
+    </div>
+
+    <!-- Config Form -->
+    <div class="card p-6 mb-6 no-print">
+      <h2 class="text-base font-semibold text-slate-700 mb-4 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 011.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.56.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.893.149c-.425.07-.765.383-.93.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 01-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.397.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 01-.12-1.45l.527-.737c.25-.35.273-.806.108-1.204-.165-.397-.505-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.107-1.204l-.527-.738a1.125 1.125 0 01.12-1.45l.773-.773a1.125 1.125 0 011.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        页面配置
+      </h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+        <div class="sm:col-span-2">
+          <label class="block text-sm font-medium text-slate-600 mb-1">
+            客服电话 <span class="text-red-500">*</span>
+          </label>
+          <input id="cfgPhone" type="tel" value="138-0000-0000"
+            class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-lg font-semibold transition-shadow"
+            placeholder="138-0000-0000" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-600 mb-1">品牌/公司名称</label>
+          <input id="cfgBrand" type="text" value="联系客服"
+            class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 transition-shadow"
+            placeholder="联系客服" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-600 mb-1">副标题</label>
+          <input id="cfgDesc" type="text" value="专业服务，随时为您解答"
+            class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 transition-shadow"
+            placeholder="专业服务，随时为您解答" />
+        </div>
+
+        <div class="sm:col-span-2">
+          <label class="block text-sm font-medium text-slate-600 mb-1">营业时间</label>
+          <input id="cfgHours" type="text" value="服务时间：周一至周日 09:00 – 18:00"
+            class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 transition-shadow"
+            placeholder="服务时间：周一至周日 09:00 – 18:00" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-600 mb-1">品牌主色</label>
+          <div class="flex items-center gap-3">
+            <input id="cfgColor" type="color" value="#1d4ed8"
+              class="w-12 h-10 rounded-lg border border-slate-200 cursor-pointer p-1" />
+            <span id="cfgColorHex" class="text-sm text-slate-500 font-mono">#1d4ed8</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Page URL -->
+      <div class="mt-4">
+        <label class="block text-sm font-medium text-slate-600 mb-1">
+          落地页 URL
+          <span class="text-slate-400 font-normal">（二维码将指向此地址）</span>
+        </label>
+        <input id="cfgUrl" type="url"
+          class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 transition-shadow font-mono text-sm"
+          placeholder="https://your-domain.com/index.html" />
+        <p class="text-xs text-slate-400 mt-1">
+          将 <code class="bg-slate-100 px-1 rounded">index.html</code> 上传到服务器后，填入公网地址；本地测试可留空（显示示例二维码）
+        </p>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex flex-wrap gap-3 mt-5">
+        <button onclick="applyConfig()"
+          class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold px-6 py-2.5 rounded-xl transition-all cursor-pointer text-sm">
+          生成二维码
+        </button>
+        <button onclick="copyCode()"
+          class="flex-1 sm:flex-none bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-semibold px-6 py-2.5 rounded-xl transition-all cursor-pointer text-sm">
+          复制配置代码
+        </button>
+        <button onclick="window.print()"
+          class="flex-1 sm:flex-none bg-green-600 hover:bg-green-700 active:scale-95 text-white font-semibold px-6 py-2.5 rounded-xl transition-all cursor-pointer text-sm">
+          打印 / 导出
+        </button>
+      </div>
+    </div>
+
+    <!-- QR Code Print Area -->
+    <div class="card p-8 print-area text-center" id="printArea">
+
+      <div id="qrBrand" class="mb-4">
+        <div id="qrLogoWrap" class="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-3" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8)">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
+          </svg>
+        </div>
+        <h2 id="qrBrandName" class="text-xl font-bold text-slate-800">联系客服</h2>
+        <p id="qrBrandDesc" class="text-slate-500 text-sm">专业服务，随时为您解答</p>
+      </div>
+
+      <!-- QR Code canvas -->
+      <div class="flex justify-center my-6">
+        <div class="p-4 border-2 border-slate-100 rounded-2xl inline-block">
+          <canvas id="qrCanvas"></canvas>
+        </div>
+      </div>
+
+      <p class="text-slate-500 text-sm mb-1">扫描二维码，点击按钮即可拨打</p>
+      <p id="qrPhone" class="text-2xl font-bold text-slate-800 tracking-wide">138-0000-0000</p>
+      <p id="qrHours" class="text-slate-400 text-xs mt-2">服务时间：周一至周日 09:00 – 18:00</p>
+    </div>
+
+    <!-- Instructions -->
+    <div class="card p-6 mt-6 no-print">
+      <h2 class="text-base font-semibold text-slate-700 mb-3">使用说明</h2>
+      <ol class="space-y-2 text-sm text-slate-600 list-decimal list-inside">
+        <li>在上方<strong>配置区</strong>填写您的手机号码及品牌信息</li>
+        <li>打开 <code class="bg-slate-100 px-1 rounded">index.html</code>，修改顶部 <code class="bg-slate-100 px-1 rounded">CONFIG</code> 对象中的 <code class="bg-slate-100 px-1 rounded">phone</code> 等字段</li>
+        <li>将 <code class="bg-slate-100 px-1 rounded">index.html</code> 上传到 Web 服务器，获取公网 URL</li>
+        <li>将公网 URL 粘贴到上方「落地页 URL」输入框，点击<strong>生成二维码</strong></li>
+        <li>点击<strong>打印 / 导出</strong>，将二维码打印出来张贴或分发</li>
+      </ol>
+      <div class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-700">
+        <strong>提示：</strong>如无公网服务器，可将 <code>index.html</code> 放入任意静态托管服务（如 GitHub Pages、Vercel、Netlify、阿里云 OSS 等），获取 HTTPS 地址后再生成二维码。
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // 颜色选择器实时预览
+    document.getElementById("cfgColor").addEventListener("input", function() {
+      document.getElementById("cfgColorHex").textContent = this.value;
+    });
+
+    function applyConfig() {
+      const phone   = document.getElementById("cfgPhone").value.trim()  || "138-0000-0000";
+      const brand   = document.getElementById("cfgBrand").value.trim()  || "联系客服";
+      const desc    = document.getElementById("cfgDesc").value.trim()   || "";
+      const hours   = document.getElementById("cfgHours").value.trim()  || "";
+      const color   = document.getElementById("cfgColor").value;
+      const url     = document.getElementById("cfgUrl").value.trim();
+
+      // Update preview card
+      document.getElementById("qrBrandName").textContent = brand;
+      document.getElementById("qrBrandDesc").textContent = desc;
+      document.getElementById("qrPhone").textContent     = phone;
+      document.getElementById("qrHours").textContent     = hours;
+      document.getElementById("qrLogoWrap").style.background =
+        `linear-gradient(135deg, ${color}, ${color}cc)`;
+
+      // Generate QR code
+      const qrTarget = url || `tel:${phone.replace(/[\s\-]/g,"")}`;
+      const canvas = document.getElementById("qrCanvas");
+      QRCode.toCanvas(canvas, qrTarget, {
+        width: 220,
+        margin: 2,
+        color: { dark: "#0f172a", light: "#ffffff" },
+        errorCorrectionLevel: "H"
+      }, function(err) {
+        if (err) console.error(err);
+      });
+    }
+
+    function copyCode() {
+      const phone  = document.getElementById("cfgPhone").value.trim()  || "138-0000-0000";
+      const brand  = document.getElementById("cfgBrand").value.trim()  || "联系客服";
+      const desc   = document.getElementById("cfgDesc").value.trim()   || "";
+      const hours  = document.getElementById("cfgHours").value.trim()  || "";
+      const color  = document.getElementById("cfgColor").value;
+
+      const snippet = `const CONFIG = {
+  phone:         "${phone}",
+  brandName:     "${brand}",
+  brandDesc:     "${desc}",
+  businessHours: "${hours}",
+  brandColor:    "${color}",
+};`;
+      navigator.clipboard.writeText(snippet).then(() => {
+        alert("配置代码已复制！请粘贴到 index.html 顶部的 CONFIG 对象中。");
+      });
+    }
+
+    // Auto-generate on load
+    applyConfig();
+  </script>
+</body>
+</html>
