@@ -6,173 +6,221 @@
   <title>Order Now</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
 
-    :root { --brand: #c8a96e; }
+    * { font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Noto Sans SC', sans-serif; }
 
-    html, body { height: 100%; }
+    html, body { height: 100%; margin: 0; }
 
     body {
-      background: #0c0c0c;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
+      /* macOS Sonoma-style gradient wallpaper */
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(120,160,255,.28) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 85% 80%, rgba(180,120,255,.22) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 70% at 55% 45%, rgba(80,200,255,.1)  0%, transparent 65%),
+        linear-gradient(160deg, #1a1f2e 0%, #0f1218 100%);
     }
 
-    .serif  { font-family: 'Playfair Display', 'Noto Sans SC', serif; }
-    .sans   { font-family: 'Inter', 'Noto Sans SC', sans-serif; }
-    * { font-family: 'Inter', 'Noto Sans SC', system-ui, sans-serif; }
-
-    /* ── Language toggle ── */
+    /* ── Language pill ── */
     .lang-toggle {
-      position: fixed; top: 1.25rem; right: 1.25rem; z-index: 50;
+      position: fixed; top: 1.1rem; right: 1.1rem; z-index: 50;
       display: flex;
-      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.08);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255,255,255,.14);
       border-radius: 9999px;
-      overflow: hidden;
+      padding: 3px; gap: 2px;
     }
     .lang-btn {
-      padding: 6px 16px;
-      font-size: .7rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
-      color: rgba(255,255,255,.35);
-      cursor: pointer; transition: all .2s;
-      border: none; background: transparent;
+      padding: 5px 15px; border-radius: 9999px;
+      font-size: .72rem; font-weight: 500; letter-spacing: .02em;
+      color: rgba(255,255,255,.45);
+      cursor: pointer; transition: all .18s; border: none; background: transparent;
     }
     .lang-btn.active {
-      background: var(--brand);
-      color: #0c0c0c;
+      background: rgba(255,255,255,.18);
+      color: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,.3);
     }
 
-    /* ── Gold divider ── */
-    .gold-line {
-      width: 2.5rem; height: 1px;
-      background: var(--brand);
-      margin: 0 auto;
-      opacity: .7;
+    /* ── Main glass card ── */
+    .mac-card {
+      background: rgba(255,255,255,.08);
+      backdrop-filter: blur(40px) saturate(200%);
+      -webkit-backdrop-filter: blur(40px) saturate(200%);
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 20px;
+      box-shadow:
+        0 0 0 .5px rgba(255,255,255,.06) inset,
+        0 32px 64px rgba(0,0,0,.45),
+        0 8px 24px rgba(0,0,0,.25);
     }
 
-    /* ── Order button ── */
-    .order-btn {
-      width: 4.5rem; height: 4.5rem;
-      border-radius: 9999px;
-      background: var(--brand);
+    /* ── Inner row / separator ── */
+    .sep {
+      height: 1px;
+      background: rgba(255,255,255,.08);
+    }
+
+    /* ── Call button ── */
+    .call-btn {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(145deg, #34d399, #059669);
+      box-shadow: 0 4px 20px rgba(52,211,153,.4), 0 1px 3px rgba(0,0,0,.3);
       display: flex; align-items: center; justify-content: center;
-      transition: transform .15s, opacity .15s;
-      box-shadow: 0 0 0 8px rgba(200,169,110,.08), 0 0 0 16px rgba(200,169,110,.04);
-      cursor: pointer;
+      transition: transform .14s ease, box-shadow .14s ease;
+      cursor: pointer; text-decoration: none;
     }
-    .order-btn:active  { transform: scale(.94); opacity: .85; }
+    .call-btn:active {
+      transform: scale(.93);
+      box-shadow: 0 2px 10px rgba(52,211,153,.3);
+    }
 
-    /* ── Subtle pulse ── */
-    .ripple {
+    /* ── Soft pulse ── */
+    .glow-ring {
       position: absolute;
-      width: 4.5rem; height: 4.5rem;
-      border-radius: 9999px;
-      border: 1px solid rgba(200,169,110,.3);
-      animation: ripple 2.4s ease-out infinite;
+      width: 72px; height: 72px; border-radius: 50%;
+      background: rgba(52,211,153,.15);
+      animation: glow 2.2s ease-out infinite;
     }
-    .ripple:nth-child(2) { animation-delay: .8s; }
-    @keyframes ripple {
-      0%   { transform: scale(1);   opacity: .6; }
-      100% { transform: scale(2.4); opacity: 0;  }
+    .glow-ring:nth-child(2) { animation-delay: .7s; }
+    @keyframes glow {
+      0%   { transform: scale(1);    opacity: .7; }
+      100% { transform: scale(2.1);  opacity: 0;  }
     }
 
-    /* ── Online dot ── */
-    .online-dot {
-      width: .55rem; height: .55rem;
-      background: #4ade80;
-      border-radius: 9999px;
-      box-shadow: 0 0 6px #4ade80;
-      animation: blink 2s ease-in-out infinite;
-    }
-    @keyframes blink {
-      0%,100% { opacity: 1; }
-      50%      { opacity: .4; }
+    /* ── Status dot ── */
+    .dot-green {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #34d399;
+      box-shadow: 0 0 5px rgba(52,211,153,.8);
+      flex-shrink: 0;
     }
 
     /* ── Shimmer ── */
     .shimmer {
       display: inline-block;
-      background: linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.09) 50%,rgba(255,255,255,.04) 75%);
+      background: linear-gradient(90deg,
+        rgba(255,255,255,.04) 25%,
+        rgba(255,255,255,.1)  50%,
+        rgba(255,255,255,.04) 75%);
       background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      border-radius: .3rem; color: transparent !important;
-      min-width: 7rem; min-height: .9em;
+      animation: sh 1.4s infinite;
+      border-radius: .3rem;
+      color: transparent !important;
+      min-width: 6rem; min-height: .85em;
     }
-    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    @keyframes sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
   </style>
 </head>
 <body>
 
-  <!-- Language toggle -->
-  <div class="lang-toggle sans">
+  <!-- Lang pill -->
+  <div class="lang-toggle">
     <button class="lang-btn active" id="btnZh" onclick="setLang('zh')">中文</button>
     <button class="lang-btn"        id="btnEn" onclick="setLang('en')">EN</button>
   </div>
 
-  <div class="w-full max-w-xs mx-auto px-6 text-center">
+  <div class="w-full max-w-xs mx-auto px-5">
+    <div class="mac-card overflow-hidden">
 
-    <!-- Restaurant name -->
-    <h1 id="brandName" class="serif text-3xl font-semibold text-white tracking-wide shimmer">&nbsp;</h1>
+      <!-- ── Top: brand ── -->
+      <div class="px-7 pt-8 pb-6 text-center">
 
-    <div class="gold-line mt-3 mb-3"></div>
+        <!-- Icon -->
+        <div id="brandIcon"
+             class="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-4 shadow-lg"
+             style="background: linear-gradient(145deg,#5b8af5,#3b63d4);">
+          <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24"
+               stroke="currentColor" stroke-width="1.7">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/>
+          </svg>
+        </div>
 
-    <p id="brandDesc" class="sans text-xs tracking-widest uppercase shimmer"
-       style="color:rgba(255,255,255,.35)">&nbsp;</p>
+        <h1 id="brandName"
+            class="text-xl font-semibold tracking-tight shimmer"
+            style="color:rgba(255,255,255,.95)">&nbsp;</h1>
+        <p id="brandDesc"
+           class="text-xs mt-1 shimmer"
+           style="color:rgba(255,255,255,.4)">&nbsp;</p>
+      </div>
 
-    <!-- Spacer -->
-    <div class="mt-10"></div>
+      <div class="sep"></div>
 
-    <!-- AI status row -->
-    <div class="flex items-center justify-center gap-2 mb-8">
-      <div class="online-dot"></div>
-      <span id="aiStatus" class="sans text-xs tracking-wider uppercase"
-            style="color:rgba(255,255,255,.4)"></span>
-    </div>
+      <!-- ── Middle: AI status ── -->
+      <div class="px-7 py-4 flex items-center justify-between">
+        <div>
+          <p id="aiLabel" class="text-xs font-medium" style="color:rgba(255,255,255,.85)"></p>
+          <p id="aiSub"   class="text-xs mt-0.5"      style="color:rgba(255,255,255,.35)"></p>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <div class="dot-green"></div>
+          <span id="aiOnline" class="text-xs" style="color:rgba(255,255,255,.4)"></span>
+        </div>
+      </div>
 
-    <!-- Order button -->
-    <div class="relative flex items-center justify-center mb-8">
-      <div class="ripple"></div>
-      <div class="ripple"></div>
-      <a id="orderLink" href="#" class="order-btn relative z-10" aria-label="Order Now">
-        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none"
-             stroke="#0c0c0c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
-        </svg>
-      </a>
-    </div>
+      <div class="sep"></div>
 
-    <!-- CTA text -->
-    <p id="callHint" class="sans text-sm font-medium mb-1" style="color:var(--brand)"></p>
-    <p id="callSubhint" class="sans text-xs" style="color:rgba(255,255,255,.25)"></p>
+      <!-- ── Bottom: call button ── -->
+      <div class="px-7 pt-7 pb-8 text-center">
 
-    <!-- Hours -->
-    <div class="mt-10 flex items-center justify-center gap-2" style="color:rgba(255,255,255,.25)">
+        <div class="relative flex items-center justify-center mb-6">
+          <div class="glow-ring"></div>
+          <div class="glow-ring"></div>
+          <a id="orderLink" href="#" class="call-btn relative z-10" aria-label="Call">
+            <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor" stroke-width="2.1">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
+            </svg>
+          </a>
+        </div>
+
+        <p id="callHint"
+           class="text-sm font-medium mb-1"
+           style="color:rgba(255,255,255,.85)"></p>
+        <p id="callSubhint"
+           class="text-xs"
+           style="color:rgba(255,255,255,.3)"></p>
+      </div>
+
+    </div><!-- /mac-card -->
+
+    <!-- Hours pill -->
+    <div class="mt-4 flex items-center justify-center gap-2"
+         style="color:rgba(255,255,255,.3)">
       <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24"
            stroke="currentColor" stroke-width="1.8">
         <path stroke-linecap="round" stroke-linejoin="round"
           d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
       </svg>
-      <span id="businessHours" class="sans text-xs tracking-wide shimmer">&nbsp;</span>
+      <span id="businessHours" class="text-xs shimmer">&nbsp;</span>
     </div>
 
-    <!-- Footer -->
-    <p id="footer" class="sans text-xs mt-8" style="color:rgba(255,255,255,.12)"></p>
-
+    <p id="footer" class="text-center text-xs mt-5" style="color:rgba(255,255,255,.12)"></p>
   </div>
 
   <script>
     const I18N = {
       zh: {
-        aiStatus:    "AI 员工在线",
+        aiLabel:     "AI 点餐助手",
+        aiSub:       "语音点餐 · 全程中文",
+        aiOnline:    "在线",
         callHint:    "点击开始语音点餐",
-        callSubhint: "接通后请告知您想点的菜品",
+        callSubhint: "接通后请告知想点的菜品",
         footer:      "扫码即代表您同意本店服务条款",
       },
       en: {
-        aiStatus:    "AI Assistant Online",
-        callHint:    "Tap to place your order",
+        aiLabel:     "AI Order Assistant",
+        aiSub:       "Voice ordering · English supported",
+        aiOnline:    "Online",
+        callHint:    "Tap to start ordering",
         callSubhint: "Tell the AI what you'd like",
         footer:      "Scanning implies acceptance of our Terms of Service",
       },
@@ -183,25 +231,25 @@
       ((navigator.language || "zh").toLowerCase().startsWith("zh") ? "zh" : "en");
 
     function render() {
-      const t         = I18N[currentLang];
-      const brandName = currentLang === "zh" ? cfg.brandName     : cfg.brandNameEn;
-      const brandDesc = currentLang === "zh" ? cfg.brandDesc     : cfg.brandDescEn;
-      const hours     = currentLang === "zh" ? cfg.businessHours : cfg.businessHoursEn;
-      const rawPhone  = (cfg.phone || "").replace(/[\s\-(). ]/g, "");
+      const t        = I18N[currentLang];
+      const name     = currentLang === "zh" ? cfg.brandName     : cfg.brandNameEn;
+      const desc     = currentLang === "zh" ? cfg.brandDesc     : cfg.brandDescEn;
+      const hours    = currentLang === "zh" ? cfg.businessHours : cfg.businessHoursEn;
+      const rawPhone = (cfg.phone || "").replace(/[\s\-(). ]/g, "");
+      const color    = cfg.brandColor || "#3b63d4";
 
       document.getElementById("htmlRoot").lang             = currentLang === "zh" ? "zh-CN" : "en";
-      document.getElementById("brandName").textContent     = brandName || "";
-      document.getElementById("brandDesc").textContent     = brandDesc || "";
-      document.getElementById("businessHours").textContent = hours     || "";
-      document.getElementById("aiStatus").textContent      = t.aiStatus;
-      document.getElementById("callHint").textContent      = t.callHint;
-      document.getElementById("callSubhint").textContent   = t.callSubhint;
-      document.getElementById("footer").textContent        = t.footer;
+      document.getElementById("brandName").textContent     = name  || "";
+      document.getElementById("brandDesc").textContent     = desc  || "";
+      document.getElementById("businessHours").textContent = hours || "";
       document.getElementById("orderLink").href            = "tel:" + rawPhone;
+      document.getElementById("brandIcon").style.background =
+        `linear-gradient(145deg, ${color}dd, ${color})`;
 
-      document.documentElement.style.setProperty("--brand", cfg.brandColor || "#c8a96e");
-
-      ["brandName", "brandDesc", "businessHours"].forEach(id =>
+      ["aiLabel","aiSub","aiOnline","callHint","callSubhint","footer"].forEach(id =>
+        document.getElementById(id).textContent = t[id]
+      );
+      ["brandName","brandDesc","businessHours"].forEach(id =>
         document.getElementById(id).classList.remove("shimmer")
       );
 
@@ -218,9 +266,7 @@
     fetch("/api/config")
       .then(r => r.json())
       .then(data => { cfg = data; render(); })
-      .catch(() => {
-        document.getElementById("brandName").textContent = "Unable to load";
-      });
+      .catch(() => { document.getElementById("brandName").textContent = "Unable to load"; });
   </script>
 </body>
 </html>
