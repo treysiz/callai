@@ -1,260 +1,284 @@
 <!DOCTYPE html>
 <html lang="zh-CN" id="htmlRoot">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Order Now</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap');
 
-    * { font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Noto Sans SC', sans-serif; }
-
-    html, body { height: 100%; margin: 0; }
+    * { font-family: 'Inter','Noto Sans SC',system-ui,sans-serif; -webkit-tap-highlight-color: transparent; }
+    html,body { height:100%; margin:0; }
 
     body {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      /* macOS Sonoma-style gradient wallpaper */
-      background:
-        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(120,160,255,.28) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 50% at 85% 80%, rgba(180,120,255,.22) 0%, transparent 55%),
-        radial-gradient(ellipse 70% 70% at 55% 45%, rgba(80,200,255,.1)  0%, transparent 65%),
-        linear-gradient(160deg, #1a1f2e 0%, #0f1218 100%);
+      min-height:100vh;
+      background:#f5f0eb;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
     }
 
-    /* ── Language pill ── */
+    /* ── Hero banner ── */
+    .hero {
+      width:100%;
+      background: linear-gradient(160deg,#c0392b 0%,#96281b 60%,#7d1f15 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content:'';
+      position:absolute; inset:0;
+      background:
+        radial-gradient(ellipse 60% 80% at 90% -10%, rgba(255,200,50,.18) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 50% at 10% 110%, rgba(0,0,0,.25) 0%, transparent 60%);
+    }
+    /* decorative circle */
+    .hero::after {
+      content:'';
+      position:absolute;
+      width:280px; height:280px; border-radius:50%;
+      border:1px solid rgba(255,255,255,.06);
+      top:-80px; right:-60px;
+    }
+
+    /* ── Lang toggle ── */
     .lang-toggle {
-      position: fixed; top: 1.1rem; right: 1.1rem; z-index: 50;
-      display: flex;
-      background: rgba(255,255,255,.08);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      border: 1px solid rgba(255,255,255,.14);
-      border-radius: 9999px;
-      padding: 3px; gap: 2px;
+      position:absolute; top:1rem; right:1rem; z-index:10;
+      display:flex;
+      background:rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.15);
+      border-radius:9999px; padding:3px; gap:2px;
     }
     .lang-btn {
-      padding: 5px 15px; border-radius: 9999px;
-      font-size: .72rem; font-weight: 500; letter-spacing: .02em;
-      color: rgba(255,255,255,.45);
-      cursor: pointer; transition: all .18s; border: none; background: transparent;
+      padding:4px 13px; border-radius:9999px;
+      font-size:.68rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+      color:rgba(255,255,255,.5);
+      cursor:pointer; border:none; background:transparent;
+      transition:all .18s;
     }
-    .lang-btn.active {
-      background: rgba(255,255,255,.18);
-      color: #fff;
-      box-shadow: 0 1px 3px rgba(0,0,0,.3);
+    .lang-btn.active { background:rgba(255,255,255,.2); color:#fff; }
+
+    /* ── Tag pill ── */
+    .tag {
+      display:inline-flex; align-items:center; gap:5px;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:9999px;
+      padding:4px 11px;
+      font-size:.7rem; font-weight:500;
+      color:rgba(255,255,255,.8);
     }
 
-    /* ── Main glass card ── */
-    .mac-card {
-      background: rgba(255,255,255,.08);
-      backdrop-filter: blur(40px) saturate(200%);
-      -webkit-backdrop-filter: blur(40px) saturate(200%);
-      border: 1px solid rgba(255,255,255,.16);
-      border-radius: 20px;
-      box-shadow:
-        0 0 0 .5px rgba(255,255,255,.06) inset,
-        0 32px 64px rgba(0,0,0,.45),
-        0 8px 24px rgba(0,0,0,.25);
+    /* ── White content card ── */
+    .white-card {
+      background:#fff;
+      border-radius:24px 24px 0 0;
+      margin-top:-20px;
+      width:100%;
+      flex:1;
+      position:relative;
+      z-index:2;
+      box-shadow:0 -4px 24px rgba(0,0,0,.08);
     }
 
-    /* ── Inner row / separator ── */
-    .sep {
-      height: 1px;
-      background: rgba(255,255,255,.08);
+    /* ── Menu category chips ── */
+    .menu-chip {
+      display:flex; flex-direction:column; align-items:center; gap:6px;
+      padding:12px 10px;
+      background:#fdf7f0;
+      border:1.5px solid #f0e8de;
+      border-radius:16px;
+      cursor:pointer;
+      transition:all .15s;
+      flex:1;
     }
+    .menu-chip:active { transform:scale(.96); background:#faeedd; }
+    .menu-chip-icon { font-size:1.4rem; line-height:1; }
+    .menu-chip-label { font-size:.65rem; font-weight:600; color:#7c4a2a; text-align:center; }
 
     /* ── Call button ── */
     .call-btn {
-      width: 72px; height: 72px; border-radius: 50%;
-      background: linear-gradient(145deg, #34d399, #059669);
-      box-shadow: 0 4px 20px rgba(52,211,153,.4), 0 1px 3px rgba(0,0,0,.3);
-      display: flex; align-items: center; justify-content: center;
-      transition: transform .14s ease, box-shadow .14s ease;
-      cursor: pointer; text-decoration: none;
+      width:100%;
+      background:linear-gradient(135deg,#e74c3c,#c0392b);
+      border-radius:16px;
+      padding:18px;
+      display:flex; align-items:center; justify-content:center; gap:12px;
+      box-shadow:0 8px 24px rgba(192,57,43,.35);
+      transition:transform .14s, box-shadow .14s;
+      text-decoration:none;
+      cursor:pointer;
     }
     .call-btn:active {
-      transform: scale(.93);
-      box-shadow: 0 2px 10px rgba(52,211,153,.3);
+      transform:scale(.98);
+      box-shadow:0 4px 12px rgba(192,57,43,.3);
     }
 
-    /* ── Soft pulse ── */
-    .glow-ring {
-      position: absolute;
-      width: 72px; height: 72px; border-radius: 50%;
-      background: rgba(52,211,153,.15);
-      animation: glow 2.2s ease-out infinite;
-    }
-    .glow-ring:nth-child(2) { animation-delay: .7s; }
-    @keyframes glow {
-      0%   { transform: scale(1);    opacity: .7; }
-      100% { transform: scale(2.1);  opacity: 0;  }
-    }
-
-    /* ── Status dot ── */
-    .dot-green {
-      width: 7px; height: 7px; border-radius: 50%;
-      background: #34d399;
-      box-shadow: 0 0 5px rgba(52,211,153,.8);
-      flex-shrink: 0;
-    }
+    /* ── Stars ── */
+    .star { color:#f59e0b; font-size:.75rem; }
 
     /* ── Shimmer ── */
     .shimmer {
-      display: inline-block;
-      background: linear-gradient(90deg,
-        rgba(255,255,255,.04) 25%,
-        rgba(255,255,255,.1)  50%,
-        rgba(255,255,255,.04) 75%);
-      background-size: 200% 100%;
-      animation: sh 1.4s infinite;
-      border-radius: .3rem;
-      color: transparent !important;
-      min-width: 6rem; min-height: .85em;
+      display:inline-block;
+      background:linear-gradient(90deg,#f0ece8 25%,#e8e0d8 50%,#f0ece8 75%);
+      background-size:200% 100%;
+      animation:sh 1.4s infinite;
+      border-radius:.3rem;
+      color:transparent !important;
+      min-width:6rem; min-height:.8em;
     }
-    @keyframes sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    @keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+    /* ── Dot pulse ── */
+    .dot-online {
+      width:8px; height:8px; border-radius:50%;
+      background:#22c55e;
+      box-shadow:0 0 6px rgba(34,197,94,.8);
+      animation:dot 2s ease-in-out infinite;
+      flex-shrink:0;
+    }
+    @keyframes dot{0%,100%{opacity:1}50%{opacity:.4}}
   </style>
 </head>
 <body>
 
-  <!-- Lang pill -->
-  <div class="lang-toggle">
-    <button class="lang-btn active" id="btnZh" onclick="setLang('zh')">中文</button>
-    <button class="lang-btn"        id="btnEn" onclick="setLang('en')">EN</button>
-  </div>
+  <!-- ── Hero ── -->
+  <div class="hero w-full max-w-sm relative px-5 pt-14 pb-12">
 
-  <div class="w-full max-w-xs mx-auto px-5">
-    <div class="mac-card overflow-hidden">
-
-      <!-- ── Top: brand ── -->
-      <div class="px-7 pt-8 pb-6 text-center">
-
-        <!-- Icon -->
-        <div id="brandIcon"
-             class="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-4 shadow-lg"
-             style="background: linear-gradient(145deg,#5b8af5,#3b63d4);">
-          <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24"
-               stroke="currentColor" stroke-width="1.7">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/>
-          </svg>
-        </div>
-
-        <h1 id="brandName"
-            class="text-xl font-semibold tracking-tight shimmer"
-            style="color:rgba(255,255,255,.95)">&nbsp;</h1>
-        <p id="brandDesc"
-           class="text-xs mt-1 shimmer"
-           style="color:rgba(255,255,255,.4)">&nbsp;</p>
-      </div>
-
-      <div class="sep"></div>
-
-      <!-- ── Middle: AI status ── -->
-      <div class="px-7 py-4 flex items-center justify-between">
-        <div>
-          <p id="aiLabel" class="text-xs font-medium" style="color:rgba(255,255,255,.85)"></p>
-          <p id="aiSub"   class="text-xs mt-0.5"      style="color:rgba(255,255,255,.35)"></p>
-        </div>
-        <div class="flex items-center gap-1.5">
-          <div class="dot-green"></div>
-          <span id="aiOnline" class="text-xs" style="color:rgba(255,255,255,.4)"></span>
-        </div>
-      </div>
-
-      <div class="sep"></div>
-
-      <!-- ── Bottom: call button ── -->
-      <div class="px-7 pt-7 pb-8 text-center">
-
-        <div class="relative flex items-center justify-center mb-6">
-          <div class="glow-ring"></div>
-          <div class="glow-ring"></div>
-          <a id="orderLink" href="#" class="call-btn relative z-10" aria-label="Call">
-            <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24"
-                 stroke="currentColor" stroke-width="2.1">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
-            </svg>
-          </a>
-        </div>
-
-        <p id="callHint"
-           class="text-sm font-medium mb-1"
-           style="color:rgba(255,255,255,.85)"></p>
-        <p id="callSubhint"
-           class="text-xs"
-           style="color:rgba(255,255,255,.3)"></p>
-      </div>
-
-    </div><!-- /mac-card -->
-
-    <!-- Hours pill -->
-    <div class="mt-4 flex items-center justify-center gap-2"
-         style="color:rgba(255,255,255,.3)">
-      <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24"
-           stroke="currentColor" stroke-width="1.8">
-        <path stroke-linecap="round" stroke-linejoin="round"
-          d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
-      </svg>
-      <span id="businessHours" class="text-xs shimmer">&nbsp;</span>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btnZh" onclick="setLang('zh')">中文</button>
+      <button class="lang-btn"        id="btnEn" onclick="setLang('en')">EN</button>
     </div>
 
-    <p id="footer" class="text-center text-xs mt-5" style="color:rgba(255,255,255,.12)"></p>
+    <!-- Rating row -->
+    <div class="flex items-center gap-1.5 mb-3 relative z-1">
+      <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+      <span class="text-white/50 text-xs ml-1">5.0</span>
+    </div>
+
+    <!-- Brand name -->
+    <h1 id="brandName" class="text-3xl font-extrabold text-white leading-tight tracking-tight relative z-1 shimmer">&nbsp;</h1>
+    <p  id="brandDesc" class="text-white/60 text-sm mt-2 relative z-1 shimmer">&nbsp;</p>
+
+    <!-- Tags -->
+    <div class="flex flex-wrap gap-2 mt-4 relative z-1">
+      <span class="tag" id="tag1"></span>
+      <span class="tag" id="tag2"></span>
+      <span class="tag" id="tag3"></span>
+    </div>
+  </div>
+
+  <!-- ── White card ── -->
+  <div class="white-card max-w-sm px-5 pt-6 pb-8">
+
+    <!-- AI status bar -->
+    <div class="flex items-center justify-between bg-green-50 border border-green-100 rounded-2xl px-4 py-3 mb-5">
+      <div class="flex items-center gap-2.5">
+        <div class="dot-online"></div>
+        <div>
+          <p id="aiLabel" class="text-sm font-semibold text-gray-800"></p>
+          <p id="aiSub"   class="text-xs text-gray-400 mt-0.5"></p>
+        </div>
+      </div>
+      <div class="bg-green-100 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-full" id="aiOnline"></div>
+    </div>
+
+    <!-- Menu categories -->
+    <p id="menuTitle" class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3"></p>
+    <div class="flex gap-2.5 mb-6">
+      <div class="menu-chip">
+        <span class="menu-chip-icon">🍜</span>
+        <span class="menu-chip-label" id="cat1"></span>
+      </div>
+      <div class="menu-chip">
+        <span class="menu-chip-icon">🥡</span>
+        <span class="menu-chip-label" id="cat2"></span>
+      </div>
+      <div class="menu-chip">
+        <span class="menu-chip-icon">🍱</span>
+        <span class="menu-chip-label" id="cat3"></span>
+      </div>
+      <div class="menu-chip">
+        <span class="menu-chip-icon">🧋</span>
+        <span class="menu-chip-label" id="cat4"></span>
+      </div>
+    </div>
+
+    <!-- Call to order button -->
+    <a id="orderLink" href="#" class="call-btn mb-4">
+      <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+        <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
+        </svg>
+      </div>
+      <div class="text-left">
+        <p id="callHint"    class="text-white font-bold text-base leading-tight"></p>
+        <p id="callSubhint" class="text-white/60 text-xs mt-0.5"></p>
+      </div>
+    </a>
+
+    <!-- Hours -->
+    <div class="flex items-center gap-2 bg-gray-50 rounded-2xl px-4 py-3">
+      <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <span id="businessHours" class="text-sm text-gray-500 shimmer">&nbsp;</span>
+    </div>
+
+    <p id="footer" class="text-center text-xs text-gray-300 mt-5"></p>
   </div>
 
   <script>
     const I18N = {
       zh: {
-        aiLabel:     "AI 点餐助手",
-        aiSub:       "语音点餐 · 全程中文",
-        aiOnline:    "在线",
-        callHint:    "点击开始语音点餐",
-        callSubhint: "接通后请告知想点的菜品",
-        footer:      "扫码即代表您同意本店服务条款",
+        tag1:'中式料理', tag2:'外卖自取', tag3:'AI 点餐',
+        aiLabel:'AI 点餐助手', aiSub:'语音点餐 · 全程中文', aiOnline:'在线服务',
+        menuTitle:'菜单分类',
+        cat1:'主食', cat2:'小炒', cat3:'套餐', cat4:'饮品',
+        callHint:'一键呼叫 AI 点餐',
+        callSubhint:'接通后告知想点的菜品',
+        footer:'扫码即代表您同意本店服务条款',
       },
       en: {
-        aiLabel:     "AI Order Assistant",
-        aiSub:       "Voice ordering · English supported",
-        aiOnline:    "Online",
-        callHint:    "Tap to start ordering",
-        callSubhint: "Tell the AI what you'd like",
-        footer:      "Scanning implies acceptance of our Terms of Service",
+        tag1:'Chinese', tag2:'Takeout', tag3:'AI Order',
+        aiLabel:'AI Order Assistant', aiSub:'Voice ordering · English supported', aiOnline:'Online',
+        menuTitle:'Menu',
+        cat1:'Noodles', cat2:'Stir Fry', cat3:'Combo', cat4:'Drinks',
+        callHint:'Call to Order Now',
+        callSubhint:'Tell the AI what you'd like',
+        footer:'Scanning implies acceptance of our Terms of Service',
       },
     };
 
     let cfg = {};
     let currentLang = localStorage.getItem("lang") ||
-      ((navigator.language || "zh").toLowerCase().startsWith("zh") ? "zh" : "en");
+      ((navigator.language||"zh").toLowerCase().startsWith("zh") ? "zh" : "en");
 
     function render() {
-      const t        = I18N[currentLang];
-      const name     = currentLang === "zh" ? cfg.brandName     : cfg.brandNameEn;
-      const desc     = currentLang === "zh" ? cfg.brandDesc     : cfg.brandDescEn;
-      const hours    = currentLang === "zh" ? cfg.businessHours : cfg.businessHoursEn;
-      const rawPhone = (cfg.phone || "").replace(/[\s\-(). ]/g, "");
-      const color    = cfg.brandColor || "#3b63d4";
+      const t       = I18N[currentLang];
+      const name    = currentLang === "zh" ? cfg.brandName     : cfg.brandNameEn;
+      const desc    = currentLang === "zh" ? cfg.brandDesc     : cfg.brandDescEn;
+      const hours   = currentLang === "zh" ? cfg.businessHours : cfg.businessHoursEn;
+      const rawPhone= (cfg.phone||"").replace(/[\s\-(). ]/g,"");
 
-      document.getElementById("htmlRoot").lang             = currentLang === "zh" ? "zh-CN" : "en";
+      document.getElementById("htmlRoot").lang = currentLang === "zh" ? "zh-CN" : "en";
       document.getElementById("brandName").textContent     = name  || "";
       document.getElementById("brandDesc").textContent     = desc  || "";
       document.getElementById("businessHours").textContent = hours || "";
       document.getElementById("orderLink").href            = "tel:" + rawPhone;
-      document.getElementById("brandIcon").style.background =
-        `linear-gradient(145deg, ${color}dd, ${color})`;
 
-      ["aiLabel","aiSub","aiOnline","callHint","callSubhint","footer"].forEach(id =>
-        document.getElementById(id).textContent = t[id]
-      );
+      ["tag1","tag2","tag3","aiLabel","aiSub","aiOnline","menuTitle",
+       "cat1","cat2","cat3","cat4","callHint","callSubhint","footer"].forEach(id => {
+        document.getElementById(id).textContent = t[id];
+      });
+
       ["brandName","brandDesc","businessHours"].forEach(id =>
         document.getElementById(id).classList.remove("shimmer")
       );
 
-      document.getElementById("btnZh").classList.toggle("active", currentLang === "zh");
-      document.getElementById("btnEn").classList.toggle("active", currentLang === "en");
+      document.getElementById("btnZh").classList.toggle("active", currentLang==="zh");
+      document.getElementById("btnEn").classList.toggle("active", currentLang==="en");
     }
 
     function setLang(lang) {
