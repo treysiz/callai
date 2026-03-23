@@ -1,11 +1,11 @@
 {
-  "phone": "138-0000-0000",
-  "brandName": "联系客服",
-  "brandNameEn": "Contact Support",
-  "brandDesc": "专业服务，随时为您解答",
-  "brandDescEn": "Professional service, always here for you",
-  "businessHours": "服务时间：周一至周日 09:00 – 18:00",
-  "businessHoursEn": "Hours: Mon – Sun  09:00 – 18:00",
-  "brandColor": "#1d4ed8",
+  "phone": "+4078639062",
+  "brandName": "欢迎光临",
+  "brandNameEn": "Welcome",
+  "brandDesc": "扫码唤醒 AI 员工，语音点餐更便捷",
+  "brandDescEn": "Scan to order with our AI assistant",
+  "businessHours": "营业时间：每日 11:00 – 22:00",
+  "businessHoursEn": "Open Daily  11:00 AM – 10:00 PM",
+  "brandColor": "#dc2626",
   "adminPassword": "admin123"
 }
