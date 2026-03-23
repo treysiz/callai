@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>管理后台 — 扫码拨打电话</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+    * { font-family: 'Inter','Noto Sans SC',system-ui,sans-serif; }
+    body { background:#f1f5f9; }
+    .card { background:#fff; border-radius:1.25rem; box-shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06); }
+    input:focus,select:focus { outline:none; box-shadow:0 0 0 3px rgba(59,130,246,.25); }
+    @media print {
+      .no-print{ display:none !important; }
+      body{ background:#fff; }
+      .print-area{ box-shadow:none; border:none; }
+    }
+  </style>
+</head>
+<body class="min-h-screen p-4 sm:p-6">
+<div class="max-w-2xl mx-auto">
+
+  <!-- Header -->
+  <div class="mb-6 text-center">
+    <h1 class="text-2xl font-bold text-slate-800">管理后台</h1>
+    <p class="text-slate-500 text-sm mt-1">修改配置需要验证管理员密码</p>
+  </div>
+
+  <!-- ── LOGIN GATE ── -->
+  <div id="loginBox" class="card p-8 mb-6 no-print">
+    <h2 class="text-base font-semibold text-slate-700 mb-4">登录</h2>
+    <div class="flex gap-3">
+      <input id="loginPwd" type="password" placeholder="请输入管理员密码"
+        class="flex-1 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 transition-shadow"
+        onkeydown="if(event.key==='Enter') doLogin()" />
+      <button onclick="doLogin()"
+        class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold px-6 py-2.5 rounded-xl transition-all cursor-pointer text-sm">
+        登录
+      </button>
+    </div>
+    <p id="loginErr" class="text-red-500 text-sm mt-2 hidden"></p>
+  </div>
+
+  <!-- ── MAIN PANEL (hidden until login) ── -->
+  <div id="mainPanel" class="hidden">
+
+    <!-- Config Form -->
+    <div class="card p-6 mb-6 no-print">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-base font-semibold text-slate-700 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 011.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.56.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.893.149c-.425.07-.765.383-.93.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 01-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.397.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 01-.12-1.45l.527-.737c.25-.35.273-.806.108-1.204-.165-.397-.505-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.107-1.204l-.527-.738a1.125 1.125 0 01.12-1.45l.773-.773a1.125 1.125 0 011.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          页面配置
+        </h2>
+        <button onclick="doLogout()" class="text-xs text-slate-400 hover:text-red-500 cursor-pointer transition-colors">退出登录</button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+        <div class="sm:col-span-2">
+          <label class="block text-sm font-medium text-slate-600 mb-1">客服电话 <span class="text-red-500">*</span></label>
+          <input id="cfgPhone" type="tel"
+            class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-lg font-semibold transition-shadow"
+            placeholder="+1 (212) 555-1234 / 138-0000-0000" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-600 mb-1">品牌名称（中文）</label>
+          <input id="cfgBrand" type="text" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 transition-shadow" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-600 mb-1">Brand Name (English)</label>
+          <input id="cfgBrandEn" type="text" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 transition-shadow" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-600 mb-1">副标题（中文）</label>
+          <input id="cfgDesc" type="text" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 transition-shadow" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-600 mb-1">Subtitle (English)</label>
+          <input id="cfgDescEn" type="text" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 transition-shadow" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-600 mb-1">营业时间（中文）</label>
+          <input id="cfgHours" type="text" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 transition-shadow" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-600 mb-1">Business Hours (English)</label>
+          <input id="cfgHoursEn" type="text" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 transition-shadow" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-600 mb-1">品牌主色</label>
+          <div class="flex items-center gap-3">
+            <input id="cfgColor" type="color" value="#1d4ed8"
+              class="w-12 h-10 rounded-lg border border-slate-200 cursor-pointer p-1" />
+            <span id="cfgColorHex" class="text-sm text-slate-500 font-mono">#1d4ed8</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 落地页 URL -->
+      <div class="mt-4">
+        <label class="block text-sm font-medium text-slate-600 mb-1">
+          落地页 URL <span class="text-slate-400 font-normal">（二维码指向此地址）</span>
+        </label>
+        <input id="cfgUrl" type="url"
+          class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 transition-shadow font-mono text-sm"
+          placeholder="https://your-domain.com/index.html" />
+      </div>
+
+      <!-- 操作按钮 -->
+      <div class="flex flex-wrap gap-3 mt-5">
+        <button onclick="saveConfig()"
+          class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold px-6 py-2.5 rounded-xl transition-all cursor-pointer text-sm">
+          保存并生成二维码
+        </button>
+        <button onclick="window.print()"
+          class="flex-1 sm:flex-none bg-green-600 hover:bg-green-700 active:scale-95 text-white font-semibold px-6 py-2.5 rounded-xl transition-all cursor-pointer text-sm">
+          打印 / 导出
+        </button>
+      </div>
+
+      <p id="saveMsg" class="text-sm mt-3 hidden"></p>
+    </div>
+
+    <!-- QR Print Area -->
+    <div class="card p-8 print-area text-center mb-6" id="printArea">
+      <div class="mb-4">
+        <div id="qrLogoWrap" class="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-3"
+             style="background:linear-gradient(135deg,#3b82f6,#1d4ed8)">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
+          </svg>
+        </div>
+        <h2 id="qrBrandName" class="text-xl font-bold text-slate-800">—</h2>
+        <p  id="qrBrandDesc" class="text-slate-500 text-sm">—</p>
+      </div>
+      <div class="flex justify-center my-6">
+        <div class="p-4 border-2 border-slate-100 rounded-2xl inline-block">
+          <canvas id="qrCanvas"></canvas>
+        </div>
+      </div>
+      <p class="text-slate-500 text-sm mb-1">扫描二维码，点击按钮即可拨打</p>
+      <p id="qrPhone" class="text-2xl font-bold text-slate-800 tracking-wide">—</p>
+      <p id="qrHours" class="text-slate-400 text-xs mt-2">—</p>
+    </div>
+
+    <!-- Change Password -->
+    <div class="card p-6 mb-6 no-print">
+      <h2 class="text-base font-semibold text-slate-700 mb-4">修改管理员密码</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <input id="pwdOld" type="password" placeholder="原密码"
+          class="border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 transition-shadow" />
+        <input id="pwdNew" type="password" placeholder="新密码（至少 6 位）"
+          class="border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 transition-shadow" />
+        <button onclick="changePassword()"
+          class="bg-slate-700 hover:bg-slate-800 active:scale-95 text-white font-semibold px-6 py-2.5 rounded-xl transition-all cursor-pointer text-sm">
+          更新密码
+        </button>
+      </div>
+      <p id="pwdMsg" class="text-sm mt-2 hidden"></p>
+    </div>
+
+  </div><!-- /mainPanel -->
+
+</div>
+
+<script>
+  let sessionPwd = "";
+
+  // ── 颜色预览 ──────────────────────────
+  document.getElementById("cfgColor").addEventListener("input", function() {
+    document.getElementById("cfgColorHex").textContent = this.value;
+  });
+
+  // ── 登录 ─────────────────────────────
+  function doLogin() {
+    const pwd = document.getElementById("loginPwd").value;
+    if (!pwd) return;
+
+    // 用一个轻量请求验证密码是否正确
+    fetch("/api/config", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: pwd }),
+    })
+    .then(r => r.json())
+    .then(res => {
+      if (res.ok) {
+        sessionPwd = pwd;
+        document.getElementById("loginBox").classList.add("hidden");
+        document.getElementById("mainPanel").classList.remove("hidden");
+        loadConfig();
+      } else {
+        showErr("loginErr", res.message || "密码错误");
+      }
+    })
+    .catch(() => showErr("loginErr", "网络错误，请重试"));
+  }
+
+  function doLogout() {
+    sessionPwd = "";
+    document.getElementById("loginPwd").value = "";
+    document.getElementById("loginBox").classList.remove("hidden");
+    document.getElementById("mainPanel").classList.add("hidden");
+  }
+
+  // ── 加载当前配置填入表单 ───────────────
+  function loadConfig() {
+    fetch("/api/config")
+      .then(r => r.json())
+      .then(cfg => {
+        document.getElementById("cfgPhone").value    = cfg.phone         || "";
+        document.getElementById("cfgBrand").value    = cfg.brandName     || "";
+        document.getElementById("cfgBrandEn").value  = cfg.brandNameEn   || "";
+        document.getElementById("cfgDesc").value     = cfg.brandDesc     || "";
+        document.getElementById("cfgDescEn").value   = cfg.brandDescEn   || "";
+        document.getElementById("cfgHours").value    = cfg.businessHours || "";
+        document.getElementById("cfgHoursEn").value  = cfg.businessHoursEn || "";
+        document.getElementById("cfgColor").value    = cfg.brandColor    || "#1d4ed8";
+        document.getElementById("cfgColorHex").textContent = cfg.brandColor || "#1d4ed8";
+        refreshPreview(cfg);
+      });
+  }
+
+  // ── 保存配置 ──────────────────────────
+  function saveConfig() {
+    const body = {
+      password:        sessionPwd,
+      phone:           document.getElementById("cfgPhone").value.trim(),
+      brandName:       document.getElementById("cfgBrand").value.trim(),
+      brandNameEn:     document.getElementById("cfgBrandEn").value.trim(),
+      brandDesc:       document.getElementById("cfgDesc").value.trim(),
+      brandDescEn:     document.getElementById("cfgDescEn").value.trim(),
+      businessHours:   document.getElementById("cfgHours").value.trim(),
+      businessHoursEn: document.getElementById("cfgHoursEn").value.trim(),
+      brandColor:      document.getElementById("cfgColor").value,
+    };
+
+    fetch("/api/config", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    })
+    .then(r => r.json())
+    .then(res => {
+      const el = document.getElementById("saveMsg");
+      el.classList.remove("hidden","text-red-500","text-green-600");
+      if (res.ok) {
+        el.classList.add("text-green-600");
+        el.textContent = "✓ 保存成功！";
+        refreshPreview(body);
+        // 根据落地页 URL 生成二维码
+        const url = document.getElementById("cfgUrl").value.trim();
+        generateQR(url || `tel:${body.phone.replace(/[\s\-(). ]/g,"")}`, body);
+      } else {
+        el.classList.add("text-red-500");
+        el.textContent = res.message || "保存失败";
+      }
+    })
+    .catch(() => showErr("saveMsg","网络错误，请重试"));
+  }
+
+  // ── 预览卡片更新 ──────────────────────
+  function refreshPreview(cfg) {
+    document.getElementById("qrBrandName").textContent = cfg.brandName  || "";
+    document.getElementById("qrBrandDesc").textContent = cfg.brandDesc  || "";
+    document.getElementById("qrPhone").textContent     = cfg.phone      || "";
+    document.getElementById("qrHours").textContent     = cfg.businessHours || "";
+    document.getElementById("qrLogoWrap").style.background =
+      `linear-gradient(135deg,${cfg.brandColor||"#1d4ed8"},${cfg.brandColor||"#1d4ed8"}cc)`;
+
+    const url = document.getElementById("cfgUrl").value.trim();
+    generateQR(url || `tel:${(cfg.phone||"").replace(/[\s\-(). ]/g,"")}`, cfg);
+  }
+
+  function generateQR(target, cfg) {
+    QRCode.toCanvas(document.getElementById("qrCanvas"), target, {
+      width: 220, margin: 2,
+      color: { dark:"#0f172a", light:"#ffffff" },
+      errorCorrectionLevel: "H",
+    }, err => { if(err) console.error(err); });
+  }
+
+  // ── 修改密码 ──────────────────────────
+  function changePassword() {
+    const oldPwd = document.getElementById("pwdOld").value;
+    const newPwd = document.getElementById("pwdNew").value;
+    fetch("/api/password", {
+      method: "POST",
+      headers: { "Content-Type":"application/json" },
+      body: JSON.stringify({ oldPassword: oldPwd, newPassword: newPwd }),
+    })
+    .then(r => r.json())
+    .then(res => {
+      const el = document.getElementById("pwdMsg");
+      el.classList.remove("hidden","text-red-500","text-green-600");
+      if (res.ok) {
+        sessionPwd = newPwd;
+        el.classList.add("text-green-600");
+        el.textContent = "✓ " + res.message;
+        document.getElementById("pwdOld").value = "";
+        document.getElementById("pwdNew").value = "";
+      } else {
+        el.classList.add("text-red-500");
+        el.textContent = res.message;
+      }
+    });
+  }
+
+  function showErr(id, msg) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.classList.remove("hidden");
+  }
+</script>
+</body>
+</html>
